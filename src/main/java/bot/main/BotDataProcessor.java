@@ -398,7 +398,7 @@ public class BotDataProcessor {
 
 	public void reactOnCommandsRequest(Update update, String message) {
 
-		if (message.toLowerCase().startsWith("/commands")) {
+		if (message.toLowerCase().startsWith("/commands") || message.toLowerCase().startsWith("/help")) {
 			StringBuilder stringBuilder = new StringBuilder();
 			getCommands(update, stringBuilder);
 
