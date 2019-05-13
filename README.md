@@ -10,9 +10,9 @@ You can create groups which users can subscribe and admins can send messages or 
   3. Create `credential.conf` by writing in the first line the telegram bot name, in the second line the bot token and in the
   third line the chatID of the person who will be SUPER_ADMIN. You can find out your chatID as described below in the section usage
   for first usage type 0 in the third line. You can run the bot and build it again with the chatID after you find out.
-  4. Store `credential.conf` file in the directory which will be used as volume. The config file has to has the path `/data/credential.conf` in the container itself.
+  4. Store `credential.conf` file in the directory which will be used as volume. The config file has to has the path `/data/credential.conf` in the container itself (which will be achieved when following step 5).
   5. Start the docker container from the just created image. A volume is required for storing the user data permanently
-  and loading the telegram api token and username.
+  and loading the telegram api token, username and SUPER_ADMIN.
   The data in the container needs to be in the directory `/data/`. To achive this run `sudo docker run -i -t -v <PathInOs>:/data <name>`
 
 ## Usage
