@@ -35,7 +35,7 @@ public class BotDataProcessor {
 		int i = 0;
 		boolean groupFound = false;
 		for (String compare : TelegramList.getAllStrings(command)) {
-			if (message.toLowerCase().contains(compare.toLowerCase())) {
+			if (message.replaceAll(" ", "").toLowerCase().contains(compare.toLowerCase())) {
 				if (command.equals("sub")) {
 					userManager.subUser(update.getMessage().getChatId(), message);
 					sender.sendMessage("Subscribed to " + TelegramList.values()[i], update);
@@ -324,6 +324,7 @@ public class BotDataProcessor {
 						noMessages = false;
 						StringBuilder stringBuilder = new StringBuilder();
 						addListInfo(stringBuilder, list);
+						
 						sender.sendMessage(stringBuilder.toString(), update);
 					}
 				}
