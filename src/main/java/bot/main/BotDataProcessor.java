@@ -377,9 +377,11 @@ public class BotDataProcessor {
 	}
 
 	public void reactOnGroupInfoRequest(Update update, String message) {
+		System.out.println("Incoming message: "+message);
 		if (message.toLowerCase().startsWith("/groups")) {
 			StringBuilder stringBuilder = new StringBuilder();
 			TelegramList[] groups = TelegramList.values();
+			System.out.println("Available groups: ("+groups.length+")");
 			stringBuilder.append("These groups are available:\n");
 			for (TelegramList list : groups) {
 				stringBuilder.append(list);
