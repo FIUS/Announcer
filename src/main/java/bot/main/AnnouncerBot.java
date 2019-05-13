@@ -27,6 +27,7 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 	private final String token;
 
 	public AnnouncerBot(String username, String token, long superAdmin) {
+		
 		AnnouncerBot.SUPER_ADMIN = superAdmin;
 		userManager = new UserManager();
 		sender = new MessageSender(this);

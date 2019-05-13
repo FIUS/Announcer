@@ -198,6 +198,7 @@ public class BotDataProcessor {
 
 	public void sendAvailableGroups(Update update, String wrongGroup) {
 		StringBuilder messageString = new StringBuilder();
+		wrongGroup = wrongGroup.replaceAll("/", "").trim();
 		sender.sendMessage("The group _" + wrongGroup + "_ does not exist\n", update);
 
 		messageString.append("You may use one of these:\n");
@@ -324,7 +325,7 @@ public class BotDataProcessor {
 						noMessages = false;
 						StringBuilder stringBuilder = new StringBuilder();
 						addListInfo(stringBuilder, list);
-						
+
 						sender.sendMessage(stringBuilder.toString(), update);
 					}
 				}
@@ -377,11 +378,10 @@ public class BotDataProcessor {
 	}
 
 	public void reactOnGroupInfoRequest(Update update, String message) {
-		System.out.println("Incoming message: "+message);
+
 		if (message.toLowerCase().startsWith("/groups")) {
 			StringBuilder stringBuilder = new StringBuilder();
 			TelegramList[] groups = TelegramList.values();
-			System.out.println("Available groups: ("+groups.length+")");
 			stringBuilder.append("These groups are available:\n");
 			for (TelegramList list : groups) {
 				stringBuilder.append(list);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public enum TelegramList {
-	SPIELE, FIUS_INTERN, ALLGEMEIN;
+	SPIELE, FIUSINTERN, ALLGEMEIN;
 
 	public static ArrayList<String> getAllStrings(String appending) {
 		ArrayList<String> output = new ArrayList<String>();
