@@ -119,7 +119,7 @@ public class UserManager {
 	public void subUser(long userID, String message) {
 		message = message.toLowerCase();
 		message = message.replace("/sub", "");
-
+		message = message.trim();
 		TelegramList tl = TelegramList.valueOf(message.toUpperCase());
 		if (users.containsKey(userID)) {
 			this.users.get(userID).lists.add(tl);
@@ -135,7 +135,7 @@ public class UserManager {
 	public void unsubUser(long user, String message) {
 		message = message.toLowerCase();
 		message = message.replaceAll("/unsub", "");
-
+		message = message.trim();
 		TelegramList tl = TelegramList.valueOf(message.toUpperCase());
 		if (this.users.containsKey(user)) {
 			this.users.get(user).lists.remove(tl);
@@ -154,6 +154,6 @@ public class UserManager {
 
 	public User getUserByID(long chatID) {
 		return users.get(chatID);
-		
+
 	}
 }
