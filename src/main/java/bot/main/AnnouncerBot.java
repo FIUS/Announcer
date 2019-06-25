@@ -126,6 +126,7 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 				processor.reactOnInfoRequest(update, message);
 				processor.reactOnGroupInfoRequest(update, message);
 				processor.reactOnCommandsRequest(update,message);
+                                processor.reactOnDish(update);
 				processor.sendWelcomeMessage(update, message);
 				
 			} else if (update.getMessage().hasPhoto()) {
