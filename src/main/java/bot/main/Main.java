@@ -9,6 +9,8 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import bot.dish.BlameText;
+
 /**
  * 
  * Loading the credentials and starting the bot
@@ -28,7 +30,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 
 		String[] credentials = loadFile(AnnouncerBot.CREDENTIALS);
-
+		BlameText.loadText();
 		ApiContextInitializer.init();
 		TelegramBotsApi botsApi = new TelegramBotsApi();
 

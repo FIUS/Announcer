@@ -29,6 +29,7 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 
 	public static boolean blockedSaving = false;
 
+	public static final String BLAME_FILE = "/data/blame.txt";
 	public static final String USER_FILE = "/data/users.bin";
 	public static final String ADMIN_FILE = "/data/admins.bin";
 	public static final String CREDENTIALS = "/data/credential.conf";

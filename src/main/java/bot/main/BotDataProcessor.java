@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,6 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import bot.dish.BlameText;
 import bot.dish.DishTimer;
 import bot.user.User;
 import bot.user.UserManager;
@@ -27,7 +29,7 @@ public class BotDataProcessor {
 	private MessageSender sender;
 	private AnnouncerBot bot;
 	private DishTimer timer;
-
+	private Random rdm;
 	private HashMap<String, Integer> washerStates;
 
 	public BotDataProcessor(AnnouncerBot bot, UserManager userManager, MessageSender sender) {
@@ -35,7 +37,7 @@ public class BotDataProcessor {
 		this.sender = sender;
 		this.bot = bot;
 		this.timer = new DishTimer(sender, userManager);
-
+		this.rdm = new Random();
 		washerStates = new HashMap<String, Integer>();
 		washerStates.put("asterix", 3);
 		washerStates.put("obelix", 2);
@@ -124,11 +126,25 @@ public class BotDataProcessor {
 
 			HashSet<User> dishUser = userManager.usersOnList(TelegramList.SIFF);
 			String maschine = (washer.charAt(0) + "").toUpperCase() + washer.substring(1);
-			String name=update.getMessage().getFrom().getFirstName();
-			for (User u : dishUser) {
-				sender.sendMessage(name+" hat den Geschirrreinigungsapparat "+maschine+" beladen!", update);
+			String name = update.getMessage().getFrom().getFirstName();
+
+			String text = BlameText.text[rdm.nextInt(BlameText.text.length)];
+
+			if (text.startsWith("#")) {
+				String temp = text.substring(1);
+				if (temp.contains("#")) {
+					text = temp.substring(temp.indexOf("#") + 1);
+				}
 			}
 
+			text = text.replace("$user", name);
+			text = text.replace("$dish", maschine);
+
+			if (!text.equals("")) {
+				for (User u : dishUser) {
+					sender.sendMessage(text, update);
+				}
+			}
 		} else if (buttonName.startsWith("btn_abort")) {
 			sender.sendEditedMessage(chat_id, message_id, "Aborted");
 		}
