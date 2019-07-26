@@ -15,6 +15,9 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 	private UserManager userManager;
 	private MessageSender sender;
 	private BotDataProcessor processor;
+	
+	
+	
 	public static long SUPER_ADMIN = 0;
 
 	public static boolean blockedSaving = false;
