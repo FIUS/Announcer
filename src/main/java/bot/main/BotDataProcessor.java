@@ -118,10 +118,18 @@ public class BotDataProcessor {
 		} else if (buttonName.startsWith("btn_dish_")) {
 			String washer = buttonName.replace("btn_dish_", "");
 
-			String response=timer.toggleTimer(washer, washerStates.get(washer));
+			String response = timer.toggleTimer(washer, washerStates.get(washer));
 
 			sender.sendEditedMessage(chat_id, message_id, response);
-		}else if (buttonName.startsWith("btn_abort")) {
+
+			HashSet<User> dishUser = userManager.usersOnList(TelegramList.SIFF);
+			String maschine = (washer.charAt(0) + "").toUpperCase() + washer.substring(1);
+			String name=update.getMessage().getFrom().getFirstName();
+			for (User u : dishUser) {
+				sender.sendMessage(name+" hat den Geschirrreinigungsapparat "+maschine+" beladen!", update);
+			}
+
+		} else if (buttonName.startsWith("btn_abort")) {
 			sender.sendEditedMessage(chat_id, message_id, "Aborted");
 		}
 		if (adminButton) {
@@ -352,9 +360,9 @@ public class BotDataProcessor {
 		rowInline.add(new InlineKeyboardButton().setText("Miraculix").setCallbackData("btn_dish_miraculix"));
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
-		
+
 		rowInline = new ArrayList<InlineKeyboardButton>();
-		
+
 		rowInline.add(new InlineKeyboardButton().setText("Tick").setCallbackData("btn_dish_tick"));
 		rowInline.add(new InlineKeyboardButton().setText("Trick").setCallbackData("btn_dish_trick"));
 		rowInline.add(new InlineKeyboardButton().setText("Track").setCallbackData("btn_dish_track"));
@@ -362,7 +370,7 @@ public class BotDataProcessor {
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
-		
+
 		rowInline.add(new InlineKeyboardButton().setText("Abort").setCallbackData("btn_abort"));
 
 		// Set the keyboard to the markup
