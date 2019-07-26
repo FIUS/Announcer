@@ -487,7 +487,7 @@ public class BotDataProcessor {
 		if (userManager.isAdmin(update.getMessage().getChatId())) {
 			stringBuilder.append("\n");
 			stringBuilder.append("Admin commands:\n");
-			stringBuilder.append("@<GROUPNAME>\n<MESSAGE> - Sends a message to a group\n\n");
+			stringBuilder.append("@<GROUPNAME><MESSAGE> - Sends a message to a group\n\n");
 			stringBuilder.append("@<GROUPNAME> - As caption of a picture (will send the picture to the group)\n\n");
 			stringBuilder.append("/add <GROUPNAME> <INFO> - Adds news to a group\n\n");
 			stringBuilder.append("/remove <GROUPNAME> - Removes news from a group\n\n");
