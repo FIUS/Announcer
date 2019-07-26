@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package bot.dish;
 
-import bot.main.MessageSender;
-import bot.main.TelegramList;
-import bot.user.User;
-import bot.user.UserManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,11 +8,17 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
 import java.util.TimerTask;
-import org.telegram.telegrambots.meta.api.objects.Update;
+
+import bot.main.MessageSender;
+import bot.main.TelegramList;
+import bot.user.User;
+import bot.user.UserManager;
 
 /**
  *
- * @author Justin
+ * Handles the callback of a specific dishwasher after the washer is finished
+ *
+ * @author schieljn
  */
 public class DishTimerTask extends TimerTask {
 
@@ -30,18 +27,24 @@ public class DishTimerTask extends TimerTask {
 	private UserManager users;
 	private DishTimer timer;
 	private String washerHTTPOut;
-private int washerNumber;
+	private int washerNumber;
 
-	public DishTimerTask(String dishwasher, MessageSender sender, UserManager users, String washerOut,
-			int washerNumber, DishTimer timer) {
+	public DishTimerTask(String dishwasher, MessageSender sender, UserManager users, String washerOut, int washerNumber,
+			DishTimer timer) {
 		this.dishwasher = dishwasher.toLowerCase();
 		this.sender = sender;
 		this.users = users;
 		this.washerHTTPOut = washerOut;
 		this.timer = timer;
-		this.washerNumber=washerNumber;
+		this.washerNumber = washerNumber;
 	}
 
+	/**
+	 * 
+	 * Send to the dishwasher group the the washer is finished and also updates the
+	 * dishwasher display if the fius door is open
+	 * 
+	 */
 	@Override
 	public void run() {
 
@@ -103,6 +106,12 @@ private int washerNumber;
 
 	}
 
+	/**
+	 * 
+	 * Checks whether or not the door is open
+	 * 
+	 * @return True is fius is open, else false
+	 */
 	private boolean sendDoorRequest() {
 		URL url;
 		String out = "";

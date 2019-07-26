@@ -9,10 +9,25 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+/**
+ * 
+ * Loading the credentials and starting the bot
+ * 
+ * @author schieljn
+ *
+ */
 public class Main {
+	
+	/**
+	 * 
+	 * Initializes the bot and starts it
+	 * 
+	 * @param args Not used
+	 * @throws IOException If the credential loading fails
+	 */
 	public static void main(String[] args) throws IOException {
 
-		String[] credentials = loadCredentials(AnnouncerBot.CREDENTIALS);
+		String[] credentials = loadFile(AnnouncerBot.CREDENTIALS);
 
 		ApiContextInitializer.init();
 		TelegramBotsApi botsApi = new TelegramBotsApi();
@@ -31,7 +46,15 @@ public class Main {
 		}
 	}
 
-	public static String[] loadCredentials(String filename) throws IOException {
+	/**
+	 * 
+	 * Loads a file line by line
+	 * 
+	 * @param filename The name of the file to read (including file ending)
+	 * @return An array of Lines loaded from the file
+	 * @throws IOException
+	 */
+	public static String[] loadFile(String filename) throws IOException {
 		File file = new File(filename);
 		String[] output = new String[3];
 		try (FileReader fr = new FileReader(file); BufferedReader buffi = new BufferedReader(fr)) {

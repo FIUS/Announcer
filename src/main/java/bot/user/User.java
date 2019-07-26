@@ -5,6 +5,13 @@ import java.util.HashSet;
 
 import bot.main.TelegramList;
 
+/**
+ * 
+ * For storing the data of a telegram user
+ * 
+ * @author schieljn
+ *
+ */
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = -8957524136552453301L;
@@ -29,6 +36,7 @@ public class User implements Serializable {
 		this.lists = new HashSet<TelegramList>();
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (other instanceof User) {
 			return false;
@@ -37,6 +45,12 @@ public class User implements Serializable {
 		return ((User) other).id == this.id;
 	}
 
+	/**
+	 * 
+	 * Checks if the user has a group
+	 * 
+	 * @return True if the user has a name
+	 */
 	public boolean hasName() {
 		return this.name != null;
 	}
