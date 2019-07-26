@@ -1,6 +1,5 @@
 package bot.main;
 
-import bot.dish.DishTimer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import bot.dish.DishTimer;
 import bot.user.User;
 import bot.user.UserManager;
 

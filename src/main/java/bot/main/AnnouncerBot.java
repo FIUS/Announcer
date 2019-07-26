@@ -10,6 +10,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import bot.user.User;
 import bot.user.UserManager;
 
+/**
+ * 
+ * This class handles the message receiving 
+ * 
+ * @author schieljn
+ *
+ */
 public class AnnouncerBot extends TelegramLongPollingBot {
 
 	private UserManager userManager;
@@ -54,6 +61,11 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 
 	}
 
+	/**
+	 * 
+	 * Handles incoming messages
+	 * 
+	 */
 	@Override
 	public void onUpdateReceived(Update update) {
 		if (update.hasMessage()) {
