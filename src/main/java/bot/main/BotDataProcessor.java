@@ -121,6 +121,8 @@ public class BotDataProcessor {
 			String response=timer.toggleTimer(washer, washerStates.get(washer));
 
 			sender.sendEditedMessage(chat_id, message_id, response);
+		}else if (buttonName.startsWith("btn_abort")) {
+			sender.sendEditedMessage(chat_id, message_id, "Aborted");
 		}
 		if (adminButton) {
 			sender.sendMessage(message, userChatID);
@@ -357,6 +359,11 @@ public class BotDataProcessor {
 		rowInline.add(new InlineKeyboardButton().setText("Trick").setCallbackData("btn_dish_trick"));
 		rowInline.add(new InlineKeyboardButton().setText("Track").setCallbackData("btn_dish_track"));
 		rowInline.add(new InlineKeyboardButton().setText("Donald").setCallbackData("btn_dish_donald"));
+
+		// Set the keyboard to the markup
+		rowsInline.add(rowInline);
+		
+		rowInline.add(new InlineKeyboardButton().setText("Abort").setCallbackData("btn_abort"));
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
