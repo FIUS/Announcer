@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -19,7 +21,7 @@ import bot.dish.BlameText;
  *
  */
 public class Main {
-	
+
 	/**
 	 * 
 	 * Initializes the bot and starts it
@@ -29,19 +31,19 @@ public class Main {
 	 */
 	public static void main(String[] args) throws IOException {
 
-		String[] credentials = loadFile(AnnouncerBot.CREDENTIALS);
+		String[] credentials = loadFile(AnnouncerBot.CREDENTIALS,3);
 		BlameText.loadText();
 		ApiContextInitializer.init();
 		TelegramBotsApi botsApi = new TelegramBotsApi();
 
 		try {
 
-			AnnouncerBot bot = new AnnouncerBot(credentials[0], credentials[1],Long.parseLong(credentials[2]));
+			AnnouncerBot bot = new AnnouncerBot(credentials[0], credentials[1], Long.parseLong(credentials[2]));
 
 			botsApi.registerBot(bot);
 
 			System.out.println("Bot started");
-			
+
 		} catch (TelegramApiException e) {
 			System.err.println("Unable to start telegram bot");
 
@@ -53,10 +55,11 @@ public class Main {
 	 * Loads a file line by line
 	 * 
 	 * @param filename The name of the file to read (including file ending)
+	 * @param count The number of lines to read
 	 * @return An array of Lines loaded from the file
 	 * @throws IOException
 	 */
-	public static String[] loadFile(String filename) throws IOException {
+	public static String[] loadFile(String filename, int count) throws IOException {
 		File file = new File(filename);
 		String[] output = new String[3];
 		try (FileReader fr = new FileReader(file); BufferedReader buffi = new BufferedReader(fr)) {
@@ -70,5 +73,33 @@ public class Main {
 			throw new IOException("Unable to load file");
 		}
 		return output;
+	}
+
+	/**
+	 * 
+	 * Loads a file line by line
+	 * 
+	 * @param filename The name of the file to read (including file ending)
+	 * @return An array of Lines loaded from the file
+	 * @throws IOException
+	 */
+	public static String[] loadFile(String filename) throws IOException {
+		File file = new File(filename);
+		
+		ArrayList<String> input = new ArrayList<String>();
+
+		try (FileReader fr = new FileReader(file); BufferedReader buffi = new BufferedReader(fr)) {
+			String temp = buffi.readLine();
+
+			while (temp != null) {
+				input.add(temp);
+				temp = buffi.readLine();
+			}
+		} catch (IOException e) {
+			throw new IOException("Unable to load file");
+		}
+		Object[] output=input.toArray();
+		
+		return Arrays.copyOf(output, output.length, String[].class);
 	}
 }

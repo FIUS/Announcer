@@ -69,6 +69,7 @@ public class MessageSender {
         } catch (TelegramApiException e) {
             //logUnableToSendMessage(chat_id);
         }
+        
     }
 
     /**

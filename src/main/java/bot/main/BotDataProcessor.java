@@ -29,7 +29,7 @@ public class BotDataProcessor {
 	private MessageSender sender;
 	private AnnouncerBot bot;
 	private DishTimer timer;
-	private Random rdm;
+	private int nextInfoText;
 	private HashMap<String, Integer> washerStates;
 
 	public BotDataProcessor(AnnouncerBot bot, UserManager userManager, MessageSender sender) {
@@ -37,7 +37,7 @@ public class BotDataProcessor {
 		this.sender = sender;
 		this.bot = bot;
 		this.timer = new DishTimer(sender, userManager);
-		this.rdm = new Random();
+		this.nextInfoText = 0;
 		washerStates = new HashMap<String, Integer>();
 		washerStates.put("asterix", 3);
 		washerStates.put("obelix", 2);
@@ -118,31 +118,36 @@ public class BotDataProcessor {
 		} else if (buttonName.startsWith("btn_abort")) {
 			sender.sendEditedMessage(chat_id, message_id, "Aborted");
 		} else if (buttonName.startsWith("btn_dish_")) {
-			String washer = buttonName.replace("btn_dish_", "");
+
+			String[] splitted = buttonName.replace("btn_dish_", "").split("_");
+			String washer = splitted[0];
 
 			String response = timer.toggleTimer(washer, washerStates.get(washer));
 
 			sender.sendEditedMessage(chat_id, message_id, response);
+			if (response.contains("beladen")) {
+				HashSet<User> dishUser = userManager.usersOnList(TelegramList.SIFF);
+				String maschine = (washer.charAt(0) + "").toUpperCase() + washer.substring(1);
+				String name = splitted[1];
 
-			HashSet<User> dishUser = userManager.usersOnList(TelegramList.SIFF);
-			String maschine = (washer.charAt(0) + "").toUpperCase() + washer.substring(1);
-			String name = update.getMessage().getFrom().getFirstName();
+				String text = BlameText.text[nextInfoText];
+				nextInfoText++;
+				nextInfoText %= BlameText.text.length;
 
-			String text = BlameText.text[rdm.nextInt(BlameText.text.length)];
-
-			if (text.startsWith("#")) {
-				String temp = text.substring(1);
-				if (temp.contains("#")) {
-					text = temp.substring(temp.indexOf("#") + 1);
+				if (text.startsWith("#")) {
+					String temp = text.substring(1);
+					if (temp.contains("#")) {
+						text = temp.substring(temp.indexOf("#") + 1);
+					}
 				}
-			}
 
-			text = text.replace("$user", name);
-			text = text.replace("$dish", maschine);
+				text = text.replace("$user", name);
+				text = text.replace("$dish", maschine);
 
-			if (!text.equals("")) {
-				for (User u : dishUser) {
-					sender.sendMessage(text, update);
+				if (!text.equals("")) {
+					for (User u : dishUser) {
+						sender.sendMessage(text, u.id);
+					}
 				}
 			}
 		} else if (buttonName.startsWith("btn_abort")) {
@@ -361,8 +366,9 @@ public class BotDataProcessor {
 		}
 	}
 
-	public void displayDishwasher(long chatID) {
-
+	public void displayDishwasher(Update update) {
+		long chatID = update.getMessage().getChatId();
+		String name = update.getMessage().getFrom().getFirstName();
 		SendMessage message = new SendMessage() // Create a message object object
 				.setChatId(chatID).setText("Welcher Geschirrreinigungsapparat?");
 		message.setParseMode("markdown");
@@ -370,22 +376,24 @@ public class BotDataProcessor {
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
 
-		rowInline.add(new InlineKeyboardButton().setText("Asterix").setCallbackData("btn_dish_asterix"));
-		rowInline.add(new InlineKeyboardButton().setText("Obelix").setCallbackData("btn_dish_obelix"));
-		rowInline.add(new InlineKeyboardButton().setText("Idefix").setCallbackData("btn_dish_idefix"));
-		rowInline.add(new InlineKeyboardButton().setText("Miraculix").setCallbackData("btn_dish_miraculix"));
+		rowInline.add(new InlineKeyboardButton().setText("Asterix").setCallbackData("btn_dish_asterix_" + name));
+		rowInline.add(new InlineKeyboardButton().setText("Obelix").setCallbackData("btn_dish_obelix_" + name));
+		rowInline.add(new InlineKeyboardButton().setText("Idefix").setCallbackData("btn_dish_idefix_" + name));
+		rowInline.add(new InlineKeyboardButton().setText("Miraculix").setCallbackData("btn_dish_miraculix_" + name));
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
 
 		rowInline = new ArrayList<InlineKeyboardButton>();
 
-		rowInline.add(new InlineKeyboardButton().setText("Tick").setCallbackData("btn_dish_tick"));
-		rowInline.add(new InlineKeyboardButton().setText("Trick").setCallbackData("btn_dish_trick"));
-		rowInline.add(new InlineKeyboardButton().setText("Track").setCallbackData("btn_dish_track"));
-		rowInline.add(new InlineKeyboardButton().setText("Donald").setCallbackData("btn_dish_donald"));
+		rowInline.add(new InlineKeyboardButton().setText("Tick").setCallbackData("btn_dish_tick_" + name));
+		rowInline.add(new InlineKeyboardButton().setText("Trick").setCallbackData("btn_dish_trick_" + name));
+		rowInline.add(new InlineKeyboardButton().setText("Track").setCallbackData("btn_dish_track_" + name));
+		rowInline.add(new InlineKeyboardButton().setText("Donald").setCallbackData("btn_dish_donald_" + name));
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
+
+		rowInline = new ArrayList<InlineKeyboardButton>();
 
 		rowInline.add(new InlineKeyboardButton().setText("Abort").setCallbackData("btn_abort"));
 
@@ -532,7 +540,7 @@ public class BotDataProcessor {
 			// message = message.replace("/dish", "");
 			// message = message.trim();
 			// timer.toggleTimer(message);
-			displayDishwasher(update.getMessage().getChatId());
+			displayDishwasher(update);
 		}
 	}
 
