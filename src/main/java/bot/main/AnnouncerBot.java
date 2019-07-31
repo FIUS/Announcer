@@ -92,7 +92,7 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 					if (message.startsWith("@")) {
 						message = message.substring(1);
 						
-						String group = message.substring(message.indexOf(" ")+1);
+						String group = message.split("\n")[0];
 						try {
 							message = message.substring(group.length() + 1);
 

@@ -29,5 +29,8 @@ public enum TelegramList {
         return output;
     }
 
+    /**
+     * Contains the text a user can get from typing /info
+     */
     public static final HashMap<TelegramList, String> groupInfo = new HashMap<TelegramList, String>();
 }
