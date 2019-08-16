@@ -6,6 +6,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -59,17 +60,18 @@ public class MessageSender {
 	 *
 	 * @param message The message to deliver
 	 * @param chat_id The idientification of the user
+	 * @return The messageId of the sent message (or null)
 	 */
-	public void sendMessage(String message, long chat_id) {
+	public Message sendMessage(String message, long chat_id) {
 		SendMessage sm = new SendMessage() // Create a SendMessage object with mandatory fields
 				.setChatId(chat_id).setText(message);
 		sm.setParseMode("markdown");
 		try {
-			bot.execute(sm); // Call method to send the message
+			return bot.execute(sm); // Call method to send the message and return messageId
 		} catch (TelegramApiException e) {
 			// logUnableToSendMessage(chat_id);
 		}
-
+		return null;
 	}
 
 	/**
