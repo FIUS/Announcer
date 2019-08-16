@@ -7,134 +7,145 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.TimerTask;
 
 import bot.main.MessageSender;
 import bot.main.TelegramList;
 import bot.user.User;
 import bot.user.UserManager;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
- *
  * Handles the callback of a specific dishwasher after the washer is finished
  *
  * @author schieljn
  */
 public class DishTimerTask extends TimerTask {
 
-	private String dishwasher;
-	private MessageSender sender;
-	private UserManager users;
-	private DishTimer timer;
-	private String washerHTTPOut;
-	private int washerNumber;
+    private String dishwasher;
+    private MessageSender sender;
+    private UserManager users;
+    private DishTimer timer;
+    private String washerHTTPOut;
+    private int washerNumber;
 
-	public DishTimerTask(String dishwasher, MessageSender sender, UserManager users, String washerOut, int washerNumber,
-			DishTimer timer) {
-		this.dishwasher = dishwasher.toLowerCase();
-		this.sender = sender;
-		this.users = users;
-		this.washerHTTPOut = washerOut;
-		this.timer = timer;
-		this.washerNumber = washerNumber;
-	}
+    private Set<Message> sentMessages = new HashSet<>();
 
-	/**
-	 * 
-	 * Send to the dishwasher group the the washer is finished and also updates the
-	 * dishwasher display if the fius door is open
-	 * 
-	 */
-	@Override
-	public void run() {
+    public DishTimerTask(String dishwasher, MessageSender sender, UserManager users, String washerOut, int washerNumber,
+                         DishTimer timer) {
+        this.dishwasher = dishwasher.toLowerCase();
+        this.sender = sender;
+        this.users = users;
+        this.washerHTTPOut = washerOut;
+        this.timer = timer;
+        this.washerNumber = washerNumber;
+    }
 
-		if (!sendDoorRequest()) {
-			return;
-		}
+    /**
+     * Send to the dishwasher group the the washer is finished and also updates the
+     * dishwasher display if the fius door is open
+     */
+    @Override
+    public void run() {
 
-		timer.setWasherStateReady(washerNumber);
-		DishTimer.sendDishWaserRequest("changeWasherState=" + washerHTTPOut);
+        if (!sendDoorRequest()) {
+            return;
+        }
 
-		HashSet<User> dishUser = users.usersOnList(TelegramList.SIFF);
+        timer.setWasherStateReady(washerNumber);
+        DishTimer.sendDishWaserRequest("changeWasherState=" + washerHTTPOut);
 
-		StringBuilder messageToSend = new StringBuilder();
+        HashSet<User> dishUser = users.usersOnList(TelegramList.SIFF);
 
-		messageToSend.append("Entleert den Geschirrreinigungsapparat _");
-		messageToSend.append("\"");
-		String temp = dishwasher.substring(0, 1).toUpperCase() + dishwasher.substring(1);
-		messageToSend.append(temp);
-		messageToSend.append("\"");
-		messageToSend.append("_!");
+        StringBuilder messageToSend = new StringBuilder();
 
-		String alert = messageToSend.toString();
-		String pic = "";
+        messageToSend.append("Entleert den Geschirrreinigungsapparat _");
+        messageToSend.append("\"");
+        String temp = dishwasher.substring(0, 1).toUpperCase() + dishwasher.substring(1);
+        messageToSend.append(temp);
+        messageToSend.append("\"");
+        messageToSend.append("_!");
 
-		switch (dishwasher) {
-		case "asterix":
-			pic = "\u2612\u2610\u2610\u2610\n\u2610\u2610\u2610\u2610";
-			break;
-		case "obelix":
-			pic = "\u2610\u2612\u2610\u2610\n\u2610\u2610\u2610\u2610";
-			break;
-		case "idefix":
-			pic = "\u2610\u2610\u2612\u2610\n\u2610\u2610\u2610\u2610";
-			break;
-		case "miraculix":
-			pic = "\u2610\u2610\u2610\u2612\n\u2610\u2610\u2610\u2610";
-			break;
-		case "tick":
-			pic = "\u2610\u2610\u2610\u2610\n\u2612\u2610\u2610\u2610";
-			break;
-		case "trick":
-			pic = "\u2610\u2610\u2610\u2610\n\u2610\u2612\u2610\u2610";
-			break;
-		case "track":
-			pic = "\u2610\u2610\u2610\u2610\n\u2610\u2610\u2612\u2610";
-			break;
-		case "donald":
-			pic = "\u2610\u2610\u2610\u2610\n\u2610\u2610\u2610\u2612";
-			break;
-		default:
-			pic = "Dieser Geschirrreinigungsapparat wurde nicht vom Amt zugelassen";
-			break;
-		}
+        String alert = messageToSend.toString();
+        String pic = "";
 
-		for (User u : dishUser) {
-			sender.sendMessage(alert, u.id);
-			sender.sendMessage(pic, u.id);
-		}
+        switch (dishwasher) {
+            case "asterix":
+                pic = "\u2612\u2610\u2610\u2610\n\u2610\u2610\u2610\u2610";
+                break;
+            case "obelix":
+                pic = "\u2610\u2612\u2610\u2610\n\u2610\u2610\u2610\u2610";
+                break;
+            case "idefix":
+                pic = "\u2610\u2610\u2612\u2610\n\u2610\u2610\u2610\u2610";
+                break;
+            case "miraculix":
+                pic = "\u2610\u2610\u2610\u2612\n\u2610\u2610\u2610\u2610";
+                break;
+            case "tick":
+                pic = "\u2610\u2610\u2610\u2610\n\u2612\u2610\u2610\u2610";
+                break;
+            case "trick":
+                pic = "\u2610\u2610\u2610\u2610\n\u2610\u2612\u2610\u2610";
+                break;
+            case "track":
+                pic = "\u2610\u2610\u2610\u2610\n\u2610\u2610\u2612\u2610";
+                break;
+            case "donald":
+                pic = "\u2610\u2610\u2610\u2610\n\u2610\u2610\u2610\u2612";
+                break;
+            default:
+                pic = "Dieser Geschirrreinigungsapparat wurde nicht vom Amt zugelassen";
+                break;
+        }
 
-	}
-
-	/**
-	 * 
-	 * Checks whether or not the door is open
-	 * 
-	 * @return True is fius is open, else false
-	 */
-	private boolean sendDoorRequest() {
-		URL url;
-		String out = "";
-		try {
-
-			String a = "https://fius.informatik.uni-stuttgart.de/isOpen.php";
-			url = new URL(a);
-			URLConnection conn = url.openConnection();
-
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-				String inputLine;
-				while ((inputLine = br.readLine()) != null) {
-					out += inputLine;
-				}
+        // Delete previously sent messages
+        for (Message m : this.sentMessages) {
+			try {
+				sender.deleteMessage(m.getChatId(), m.getMessageId());
+			} catch (TelegramApiException e) {
+				e.printStackTrace(System.out);
 			}
-
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+        this.sentMessages.clear();
 
-		return out.equals("open");
-	}
+        for (User u : dishUser) {
+            this.sentMessages.add(sender.sendMessage(alert, u.id));
+            this.sentMessages.add(sender.sendMessage(pic, u.id));
+        }
+
+    }
+
+    /**
+     * Checks whether or not the door is open
+     *
+     * @return True is fius is open, else false
+     */
+    private boolean sendDoorRequest() {
+        URL url;
+        String out = "";
+        try {
+
+            String a = "https://fius.informatik.uni-stuttgart.de/isOpen.php";
+            url = new URL(a);
+            URLConnection conn = url.openConnection();
+
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                String inputLine;
+                while ((inputLine = br.readLine()) != null) {
+                    out += inputLine;
+                }
+            }
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return out.equals("open");
+    }
 
 }
