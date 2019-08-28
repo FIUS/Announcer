@@ -32,6 +32,7 @@ public class DishTimerTask extends TimerTask {
     private int washerNumber;
 
     private Set<Message> sentMessages = new HashSet<>();
+    private int tryNumber = 0;
 
     public DishTimerTask(String dishwasher, MessageSender sender, UserManager users, String washerOut, int washerNumber,
                          DishTimer timer) {
@@ -67,6 +68,12 @@ public class DishTimerTask extends TimerTask {
         messageToSend.append(temp);
         messageToSend.append("\"");
         messageToSend.append("_!");
+        if(tryNumber > 1) {
+            messageToSend.append("\n(Versuch Nr ");
+            messageToSend.append(this.tryNumber);
+            messageToSend.append(")");
+        }
+        this.tryNumber++;
 
         String alert = messageToSend.toString();
         String pic = "";
