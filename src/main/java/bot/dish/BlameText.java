@@ -12,6 +12,7 @@ public class BlameText {
 		try {
 			text = Main.loadFile(AnnouncerBot.BLAME_FILE);
 		} catch (IOException e) {
+			e.printStackTrace();
 			text = new String[1];
 			text[0] = "";
 		}
