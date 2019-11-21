@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Timer;
 
+import bot.main.AnnouncerBot;
 import bot.main.MessageSender;
 import bot.user.UserManager;
 
@@ -25,7 +26,7 @@ public class DishTimer {
 	private final MessageSender sender;
 	private final UserManager users;
 
-	private static final int WASHING_TIME = 120;
+	private final int WASHING_TIME;
 	private static final int REMEMBER_TIME = 60;
 
 	public DishTimer(MessageSender sender, UserManager users) {
@@ -35,6 +36,7 @@ public class DishTimer {
 		this.sender = sender;
 		this.users = users;
 		this.timer = new Timer[8];
+		WASHING_TIME=Integer.parseInt(AnnouncerBot.CONFIG[0]);
 	}
 
 	/**

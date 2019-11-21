@@ -1,6 +1,7 @@
 package bot.main;
 
 import java.io.File;
+import java.io.Exception;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -33,10 +34,21 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 	public static final String USER_FILE = "/data/users.bin";
 	public static final String ADMIN_FILE = "/data/admins.bin";
 	public static final String CREDENTIALS = "/data/credential.conf";
-
+	public static final String CONFIG_FILE="/data/config.conf";
+	
+	public static final String[] CONFIG;
+	
 	private final String botname;
 	private final String token;
-
+	
+	static {
+		try {
+			CONFIG=Main.loadFile(CONFIG_FILE);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public AnnouncerBot(String username, String token, long superAdmin) {
 		
 		AnnouncerBot.SUPER_ADMIN = superAdmin;
@@ -59,6 +71,7 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 
 			processor.displaySaveConfirm();
 		}
+		
 
 	}
 
