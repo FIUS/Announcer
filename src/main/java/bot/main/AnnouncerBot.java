@@ -1,7 +1,7 @@
 package bot.main;
 
 import java.io.File;
-import java.io.Exception;
+import java.lang.Exception;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -42,10 +42,15 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 	private final String token;
 	
 	static {
+		CONFIG = loadConf();
+	}
+	
+	private static String[] loadConf() {
 		try {
-			CONFIG=Main.loadFile(CONFIG_FILE);
+			return Main.loadFile(CONFIG_FILE);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return new String[]{"120"};
 		}
 	}
 	
