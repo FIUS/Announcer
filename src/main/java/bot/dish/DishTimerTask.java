@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TimerTask;
 
 import bot.main.MessageSender;
 import bot.main.TelegramList;
@@ -21,9 +23,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  * @author schieljn
  */
 public class DishTimerTask extends TimerTask {
-
-    private static final List<String> DISHWASHERS = Arrays.asList("asterix",
-            "obelix", "idefix", "miraculix", "tick", "trick", "track", "donald");
 
     private String dishwasher;
     private MessageSender sender;
@@ -77,7 +76,37 @@ public class DishTimerTask extends TimerTask {
         this.tryNumber++;
 
         String alert = messageToSend.toString();
-        String pic = generateDishwasherAsciiImage(this.dishwasher);
+        String pic = "";
+
+        switch (dishwasher) {
+            case "asterix":
+                pic = "\u2612\u2610\u2610\u2610\n\u2610\u2610\u2610\u2610";
+                break;
+            case "obelix":
+                pic = "\u2610\u2612\u2610\u2610\n\u2610\u2610\u2610\u2610";
+                break;
+            case "idefix":
+                pic = "\u2610\u2610\u2612\u2610\n\u2610\u2610\u2610\u2610";
+                break;
+            case "miraculix":
+                pic = "\u2610\u2610\u2610\u2612\n\u2610\u2610\u2610\u2610";
+                break;
+            case "tick":
+                pic = "\u2610\u2610\u2610\u2610\n\u2612\u2610\u2610\u2610";
+                break;
+            case "trick":
+                pic = "\u2610\u2610\u2610\u2610\n\u2610\u2612\u2610\u2610";
+                break;
+            case "track":
+                pic = "\u2610\u2610\u2610\u2610\n\u2610\u2610\u2612\u2610";
+                break;
+            case "donald":
+                pic = "\u2610\u2610\u2610\u2610\n\u2610\u2610\u2610\u2612";
+                break;
+            default:
+                pic = "Dieser Geschirrreinigungsapparat wurde nicht vom Amt zugelassen";
+                break;
+        }
 
         // Delete previously sent messages
         for (Message m : this.sentMessages) {
@@ -94,33 +123,6 @@ public class DishTimerTask extends TimerTask {
             this.sentMessages.add(sender.sendMessage(pic, u.id));
         }
 
-    }
-
-    /**
-     * Generates a map of dishwasher locations in ASCII format, where at most
-     * one location is marked with an 'X'.
-     * Example:
-     *   [ ] [X] [ ] [ ]
-     *   [ ] [ ] [ ] [ ]
-     * @param dishwasher name of the dishwasher to be marked
-     * @return
-     */
-    private String generateDishwasherAsciiImage(String dishwasher) {
-        final int dishwasherId = DISHWASHERS.indexOf(dishwasher.toLowerCase());
-        final int lineLength = 4;
-        String emptyLine = "[ ] ".repeat(lineLength).trim();
-        String dishwasherLine = "[ ] ".repeat(dishwasherId % lineLength)
-                + "[X]"
-                + "[ ] ".repeat(lineLength - (dishwasherId % lineLength) - 1)
-                .trim();
-
-        if (dishwasherId == -1) {
-            return "Dieser Geschirrreinigungsapparat wurde nicht vom Amt zugelassen";
-        } else if (dishwasherId < 4) {
-            return "```" + emptyLine + "\n" + dishwasherLine + "```";
-        } else {
-            return "```" + dishwasherLine + "\n" + emptyLine + "```";
-        }
     }
 
     /**
