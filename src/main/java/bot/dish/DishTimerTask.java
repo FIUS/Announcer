@@ -103,7 +103,7 @@ public class DishTimerTask extends TimerTask {
      *   [ ] [X] [ ] [ ]
      *   [ ] [ ] [ ] [ ]
      * @param dishwasher name of the dishwasher to be marked
-     * @return
+     * @return Representation of the diswasher position as ASCII string 
      */
     private String generateDishwasherAsciiImage(String dishwasher) {
         final int dishwasherId = DISHWASHERS.indexOf(dishwasher.toLowerCase());
