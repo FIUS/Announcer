@@ -108,8 +108,9 @@ public class DishTimerTask extends TimerTask {
     private String generateDishwasherAsciiImage(String dishwasher) {
         final int dishwasherId = DISHWASHERS.indexOf(dishwasher.toLowerCase());
         final int lineLength = 4;
-        String emptyLine = "[ ] ".repeat(lineLength).trim();
-        String dishwasherLine = "[ ] ".repeat(dishwasherId % lineLength)
+        String block="[ ] ";
+        String emptyLine = block.repeat(lineLength).trim();
+        String dishwasherLine = block.repeat(dishwasherId % lineLength)
                 + "[X]"
                 + "[ ] ".repeat(lineLength - (dishwasherId % lineLength) - 1)
                 .trim();
