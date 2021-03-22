@@ -90,7 +90,7 @@ public class DishTimer {
 	 * 
 	 */
 	public static void sendDishWaserRequest(String request) {
-		String url = "http://fius-led-dishwasher.int.stuvus.uni-stuttgart.de?" + request;
+		String url = "http://10.53.101.14?" + request;
 
 		HttpURLConnection con = null;
 		try {
