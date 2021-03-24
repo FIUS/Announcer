@@ -111,16 +111,16 @@ public class DishTimerTask extends TimerTask {
         String block="[ ] ";
         String emptyLine = block.repeat(lineLength).trim();
         String dishwasherLine = block.repeat(dishwasherId % lineLength)
-                + "[X]"
+                + "[X] "
                 + "[ ] ".repeat(lineLength - (dishwasherId % lineLength) - 1)
                 .trim();
 
         if (dishwasherId == -1) {
             return "Dieser Geschirrreinigungsapparat wurde nicht vom Amt zugelassen";
         } else if (dishwasherId < 4) {
-            return "```" + emptyLine + "\n" + dishwasherLine + "```";
+            return "```" + dishwasherLine + "\n" + emptyLine+ "```";
         } else {
-            return "```" + dishwasherLine + "\n" + emptyLine + "```";
+            return "```" + emptyLine + "\n" + dishwasherLine + "```";
         }
     }
 
