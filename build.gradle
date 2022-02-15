@@ -24,7 +24,7 @@ dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     implementation 'com.google.guava:guava:26.0-jre'
 
-    compile group: 'org.telegram', name: 'telegrambots', version: '4.2'
+    compile group: 'org.telegram', name: 'telegrambots', version: '5.7.1'
 	
 
     // Use JUnit test framework
