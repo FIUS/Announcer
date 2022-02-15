@@ -6,14 +6,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import bot.user.User;
 import bot.user.UserManager;
 
 /**
  * 
- * This class handles the message receiving 
+ * This class handles the message receiving
  * 
  * @author schieljn
  *
@@ -23,9 +25,7 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 	private UserManager userManager;
 	private MessageSender sender;
 	private BotDataProcessor processor;
-	
-	
-	
+
 	public static long SUPER_ADMIN = 0;
 
 	public static boolean blockedSaving = false;
@@ -34,28 +34,28 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 	public static final String USER_FILE = "/data/users.bin";
 	public static final String ADMIN_FILE = "/data/admins.bin";
 	public static final String CREDENTIALS = "/data/credential.conf";
-	public static final String CONFIG_FILE="/data/config.conf";
-	
+	public static final String CONFIG_FILE = "/data/config.conf";
+
 	public static final String[] CONFIG;
-	
+
 	private final String botname;
 	private final String token;
-	
+
 	static {
 		CONFIG = loadConf();
 	}
-	
+
 	private static String[] loadConf() {
 		try {
 			return Main.loadFile(CONFIG_FILE);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new String[]{"120"};
+			return new String[] { "120" };
 		}
 	}
-	
+
 	public AnnouncerBot(String username, String token, long superAdmin) {
-		
+
 		AnnouncerBot.SUPER_ADMIN = superAdmin;
 		userManager = new UserManager();
 		sender = new MessageSender(this);
@@ -76,7 +76,6 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 
 			processor.displaySaveConfirm();
 		}
-		
 
 	}
 
@@ -94,7 +93,7 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 				long chatID = update.getMessage().getChatId();
 
 				if (userManager.isAdmin(chatID)) {
-					if(message.toLowerCase().startsWith("/chatid")) {
+					if (message.toLowerCase().startsWith("/chatid")) {
 						processor.showChatID(update);
 					}
 					if (message.toLowerCase().startsWith("/add")) {
@@ -105,11 +104,11 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 					}
 
 					if (message.toLowerCase().startsWith("/removeadmin")) {
-						processor.displayRemoveAdmin(update,userManager.getAdmins());
+						processor.displayRemoveAdmin(update, userManager.getAdmins());
 					}
 					if (message.startsWith("@")) {
 						message = message.substring(1);
-						
+
 						String group = message.split("\n")[0];
 						try {
 							message = message.substring(group.length() + 1);
@@ -131,24 +130,24 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 						message = message.toLowerCase().replaceAll("/groupcount", "");
 						message = message.trim();
 						try {
-						TelegramList list = TelegramList.valueOf(message.toUpperCase());
-						int count = userManager.usersOnList(list).size();
-						String outputMessage = "There ";
-						if (count == 1) {
-							outputMessage += "is 1";
-							outputMessage += " user in group ";
-						} else {
-							outputMessage += "are ";
-							outputMessage += count;
-							outputMessage += " users in group ";
-						}
+							TelegramList list = TelegramList.valueOf(message.toUpperCase());
+							int count = userManager.usersOnList(list).size();
+							String outputMessage = "There ";
+							if (count == 1) {
+								outputMessage += "is 1";
+								outputMessage += " user in group ";
+							} else {
+								outputMessage += "are ";
+								outputMessage += count;
+								outputMessage += " users in group ";
+							}
 
-						outputMessage += list;
-						sender.sendMessage(outputMessage, update);
-						}catch(IllegalArgumentException e) {
+							outputMessage += list;
+							sender.sendMessage(outputMessage, update);
+						} catch (IllegalArgumentException e) {
 							processor.sendAvailableGroups(update, message);
 						}
-						}
+					}
 
 				}
 
@@ -160,10 +159,10 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 				processor.reactOnSubChange(update, message, "unsub");
 				processor.reactOnInfoRequest(update, message);
 				processor.reactOnGroupInfoRequest(update, message);
-				processor.reactOnCommandsRequest(update,message);
-                                processor.reactOnDish(update);
+				processor.reactOnCommandsRequest(update, message);
+				processor.reactOnDish(update);
 				processor.sendWelcomeMessage(update, message);
-				
+
 			} else if (update.getMessage().hasPhoto()) {
 
 				if (userManager.isAdmin(update.getMessage().getChatId())) {
@@ -180,8 +179,6 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 
 	}
 
-	
-	
 	@Override
 	public String getBotUsername() {
 

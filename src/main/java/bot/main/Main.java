@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import bot.dish.BlameText;
 
@@ -29,12 +29,11 @@ public class Main {
 	 * @param args Not used
 	 * @throws IOException If the credential loading fails
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, TelegramApiException {
 
-		String[] credentials = loadFile(AnnouncerBot.CREDENTIALS,3);
+		String[] credentials = loadFile(AnnouncerBot.CREDENTIALS, 3);
 		BlameText.loadText();
-		ApiContextInitializer.init();
-		TelegramBotsApi botsApi = new TelegramBotsApi();
+		TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
 
 		try {
 
@@ -55,7 +54,7 @@ public class Main {
 	 * Loads a file line by line
 	 * 
 	 * @param filename The name of the file to read (including file ending)
-	 * @param count The number of lines to read
+	 * @param count    The number of lines to read
 	 * @return An array of Lines loaded from the file
 	 * @throws IOException
 	 */
@@ -67,7 +66,7 @@ public class Main {
 				output[i] = buffi.readLine();
 			}
 		} catch (IOException e) {
-			throw new IOException("Unable to load file");
+			throw new IOException("Unable to load file: " + filename);
 		}
 		if (output[0] == null || output[1] == null) {
 			throw new IOException("Unable to load file");
@@ -85,7 +84,7 @@ public class Main {
 	 */
 	public static String[] loadFile(String filename) throws IOException {
 		File file = new File(filename);
-		
+
 		ArrayList<String> input = new ArrayList<String>();
 
 		try (FileReader fr = new FileReader(file); BufferedReader buffi = new BufferedReader(fr)) {
@@ -96,10 +95,10 @@ public class Main {
 				temp = buffi.readLine();
 			}
 		} catch (IOException e) {
-			throw new IOException("Unable to load file");
+			throw new IOException("Unable to load file " + filename);
 		}
-		Object[] output=input.toArray();
-		
+		Object[] output = input.toArray();
+
 		return Arrays.copyOf(output, output.length, String[].class);
 	}
 }

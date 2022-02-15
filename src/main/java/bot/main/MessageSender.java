@@ -32,8 +32,10 @@ public class MessageSender {
 	 * @param answer     The message you want to replace the buttons with
 	 */
 	public void sendEditedMessage(long chat_id, long message_id, String answer) {
-		EditMessageText new_message = new EditMessageText().setChatId(chat_id).setMessageId(toIntExact(message_id))
-				.setText(answer);
+		EditMessageText new_message = new EditMessageText();
+		new_message.setChatId(chat_id + "");
+		new_message.setMessageId(toIntExact(message_id));
+		new_message.setText(answer);
 		new_message.setParseMode("markdown");
 
 		try {
@@ -63,8 +65,9 @@ public class MessageSender {
 	 * @return The messageId of the sent message (or null)
 	 */
 	public Message sendMessage(String message, long chat_id) {
-		SendMessage sm = new SendMessage() // Create a SendMessage object with mandatory fields
-				.setChatId(chat_id).setText(message);
+		SendMessage sm = new SendMessage();
+		sm.setChatId(chat_id + "");
+		sm.setText(message);
 		sm.setParseMode("markdown");
 		try {
 			return bot.execute(sm); // Call method to send the message and return messageId
@@ -78,15 +81,17 @@ public class MessageSender {
 	 * 
 	 * Deletes a Message from a chat history
 	 * 
-	 * @param chatID    The ID of the chat the message is in @see update.getMessage().getMessageId()
-	 * @param messageID The ID of the message in the chat @see update.getMessage().getChatId()
+	 * @param chatID    The ID of the chat the message is in @see
+	 *                  update.getMessage().getMessageId()
+	 * @param messageID The ID of the message in the chat @see
+	 *                  update.getMessage().getChatId()
 	 * @throws TelegramApiException If the message could not be deleted. Note: A
 	 *                              message can only be deleted within 48 hours
 	 *                              after sending.
 	 */
 	public void deleteMessage(long chatID, int messageID) throws TelegramApiException {
 		DeleteMessage deleteMessage = new DeleteMessage();
-		deleteMessage.setChatId(chatID);
+		deleteMessage.setChatId(chatID + "");
 		deleteMessage.setMessageId(messageID);
 		bot.execute(deleteMessage);
 	}

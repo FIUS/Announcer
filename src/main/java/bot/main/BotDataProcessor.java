@@ -12,6 +12,7 @@ import java.util.Random;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -161,8 +162,9 @@ public class BotDataProcessor {
 
 	public void displayRemoveAdmin(Update update, HashMap<Long, User> admins) {
 
-		SendMessage message = new SendMessage() // Create a message object object
-				.setChatId(update.getMessage().getChatId()).setText("Who you want to remove as Admin?");
+		SendMessage message = new SendMessage();
+		message.setChatId(update.getMessage().getChatId() + "");
+		message.setText("Who you want to remove as Admin?");
 		message.setParseMode("markdown");
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
@@ -171,8 +173,10 @@ public class BotDataProcessor {
 		int counter = 0;
 
 		for (User u : admins.values()) {
-
-			rowInline.add(new InlineKeyboardButton().setText(u.name).setCallbackData("btn_admin_remove_" + u.id));
+			InlineKeyboardButton keyboard = new InlineKeyboardButton();
+			keyboard.setText(u.name);
+			keyboard.setCallbackData("btn_admin_remove_" + u.id);
+			rowInline.add(keyboard);
 
 			counter++;
 			if (counter > 1) {
@@ -183,17 +187,27 @@ public class BotDataProcessor {
 		}
 
 		if (admins.values().size() % 2 == 1) {
+			InlineKeyboardButton keyboard = new InlineKeyboardButton();
+			keyboard.setText("-");
+			keyboard.setCallbackData("btn_abort");
+			rowInline.add(keyboard);
 
-			rowInline.add(new InlineKeyboardButton().setText("-").setCallbackData("btn_abort"));
 			rowsInline.add(rowInline);
 			rowInline = new ArrayList<InlineKeyboardButton>();
-			rowInline.add(new InlineKeyboardButton().setText("Abort").setCallbackData("btn_abort"));
+
+			keyboard = new InlineKeyboardButton();
+			keyboard.setText("Abort");
+			keyboard.setCallbackData("btn_abort");
+			rowInline.add(keyboard);
 
 			rowsInline.add(rowInline);
 
 		} else {
 			rowInline = new ArrayList<InlineKeyboardButton>();
-			rowInline.add(new InlineKeyboardButton().setText("Abort").setCallbackData("btn_abort"));
+			InlineKeyboardButton keyboard = new InlineKeyboardButton();
+			keyboard.setText("Abort");
+			keyboard.setCallbackData("btn_abort");
+			rowInline.add(keyboard);
 
 			rowsInline.add(rowInline);
 
@@ -210,16 +224,24 @@ public class BotDataProcessor {
 
 	public void displayAdminRequestMenu(String nameOfUser, long chatIDofUser) {
 
-		SendMessage message = new SendMessage() // Create a message object object
-				.setChatId(AnnouncerBot.SUPER_ADMIN).setText(nameOfUser + " wants to be admin. Accept the request?");
+		SendMessage message = new SendMessage();
+		message // Create a message object object
+				.setChatId(AnnouncerBot.SUPER_ADMIN + "");
+		message.setText(nameOfUser + " wants to be admin. Accept the request?");
 		message.setParseMode("markdown");
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
 
-		rowInline.add(new InlineKeyboardButton().setText("Yes")
-				.setCallbackData("btn_admin_Yes_" + chatIDofUser + "_" + nameOfUser));
-		rowInline.add(new InlineKeyboardButton().setText("No").setCallbackData("btn_admin_No_" + chatIDofUser));
+		InlineKeyboardButton keyboard = new InlineKeyboardButton();
+		keyboard.setText("Yes");
+		keyboard.setCallbackData("btn_admin_Yes_" + chatIDofUser + "_" + nameOfUser);
+		rowInline.add(keyboard);
+
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("No");
+		keyboard.setCallbackData("btn_admin_No_" + chatIDofUser);
+		rowInline.add(keyboard);
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
@@ -281,10 +303,10 @@ public class BotDataProcessor {
 	private void sendPhoto(long chatID, File file) {
 		// Send
 		SendPhoto sendPhotoRequest = new SendPhoto();
-		sendPhotoRequest.setChatId(chatID);
-
+		sendPhotoRequest.setChatId(Long.toString(chatID));
+		InputFile inpFile = new InputFile(file, file.getAbsolutePath());
 		// path: String, photoName: String
-		sendPhotoRequest.setPhoto(file); //
+		sendPhotoRequest.setPhoto(inpFile); //
 		try {
 			bot.execute(sendPhotoRequest);
 		} catch (TelegramApiException e) {
@@ -315,18 +337,14 @@ public class BotDataProcessor {
 	public String getFilePath(PhotoSize photo) {
 		Objects.requireNonNull(photo);
 
-		if (photo.hasFilePath()) {
-			return photo.getFilePath();
-		} else {
-			GetFile getFileMethod = new GetFile();
-			getFileMethod.setFileId(photo.getFileId());
+		GetFile getFileMethod = new GetFile();
+		getFileMethod.setFileId(photo.getFileId());
 
-			try {
-				org.telegram.telegrambots.meta.api.objects.File file = bot.execute(getFileMethod);
-				return file.getFilePath();
-			} catch (TelegramApiException e) {
-				e.printStackTrace();
-			}
+		try {
+			org.telegram.telegrambots.meta.api.objects.File file = bot.execute(getFileMethod);
+			return file.getFilePath();
+		} catch (TelegramApiException e) {
+			e.printStackTrace();
 		}
 
 		return null;
@@ -344,15 +362,23 @@ public class BotDataProcessor {
 
 	public void displaySaveConfirm() {
 
-		SendMessage message = new SendMessage() // Create a message object object
-				.setChatId(AnnouncerBot.SUPER_ADMIN).setText("Failed to load users, enable writing anyway?");
+		SendMessage message = new SendMessage(); // Create a message object object
+		message.setChatId(Long.toString(AnnouncerBot.SUPER_ADMIN));
+		message.setText("Failed to load users, enable writing anyway?");
 		message.setParseMode("markdown");
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
 
-		rowInline.add(new InlineKeyboardButton().setText("Yes").setCallbackData("btn_save_Yes"));
-		rowInline.add(new InlineKeyboardButton().setText("No").setCallbackData("btn_save_No"));
+		InlineKeyboardButton keyboard = new InlineKeyboardButton();
+		keyboard.setText("Yes");
+		keyboard.setCallbackData("btn_save_Yes");
+		rowInline.add(keyboard);
+
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("No");
+		keyboard.setCallbackData("btn_save_No");
+		rowInline.add(keyboard);
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
@@ -369,33 +395,68 @@ public class BotDataProcessor {
 	public void displayDishwasher(Update update) {
 		long chatID = update.getMessage().getChatId();
 		String name = update.getMessage().getFrom().getFirstName();
-		SendMessage message = new SendMessage() // Create a message object object
-				.setChatId(chatID).setText("Welcher Geschirrreinigungsapparat?");
+		SendMessage message = new SendMessage(); // Create a message object object
+		message.setChatId(Long.toString(chatID));
+		message.setText("Welcher Geschirrreinigungsapparat?");
 		message.setParseMode("markdown");
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
 
-		rowInline.add(new InlineKeyboardButton().setText("Asterix").setCallbackData("btn_dish_asterix_" + name));
-		rowInline.add(new InlineKeyboardButton().setText("Obelix").setCallbackData("btn_dish_obelix_" + name));
-		rowInline.add(new InlineKeyboardButton().setText("Idefix").setCallbackData("btn_dish_idefix_" + name));
-		rowInline.add(new InlineKeyboardButton().setText("Miraculix").setCallbackData("btn_dish_miraculix_" + name));
+		InlineKeyboardButton keyboard = new InlineKeyboardButton();
+		keyboard.setText("Asterix");
+		keyboard.setCallbackData("btn_dish_asterix_" + name);
+		rowInline.add(keyboard);
+
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("Obelix");
+		keyboard.setCallbackData("btn_dish_obelix_" + name);
+		rowInline.add(keyboard);
+
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("Idefix");
+		keyboard.setCallbackData("btn_dish_idefix_" + name);
+		rowInline.add(keyboard);
+
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("Miraculix");
+		keyboard.setCallbackData("btn_dish_miraculix_" + name);
+		rowInline.add(keyboard);
+
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
 
 		rowInline = new ArrayList<InlineKeyboardButton>();
 
-		rowInline.add(new InlineKeyboardButton().setText("Tick").setCallbackData("btn_dish_tick_" + name));
-		rowInline.add(new InlineKeyboardButton().setText("Trick").setCallbackData("btn_dish_trick_" + name));
-		rowInline.add(new InlineKeyboardButton().setText("Track").setCallbackData("btn_dish_track_" + name));
-		rowInline.add(new InlineKeyboardButton().setText("Donald").setCallbackData("btn_dish_donald_" + name));
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("Tick");
+		keyboard.setCallbackData("btn_dish_tick_" + name);
+		rowInline.add(keyboard);
+
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("Trick");
+		keyboard.setCallbackData("btn_dish_trick_" + name);
+		rowInline.add(keyboard);
+
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("Track");
+		keyboard.setCallbackData("btn_dish_track_" + name);
+		rowInline.add(keyboard);
+
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("Donald");
+		keyboard.setCallbackData("btn_dish_donald_" + name);
+		rowInline.add(keyboard);
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
 
 		rowInline = new ArrayList<InlineKeyboardButton>();
 
-		rowInline.add(new InlineKeyboardButton().setText("Abort").setCallbackData("btn_abort"));
+		keyboard = new InlineKeyboardButton();
+		keyboard.setText("Abort");
+		keyboard.setCallbackData("btn_abort" + name);
+		rowInline.add(keyboard);
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
