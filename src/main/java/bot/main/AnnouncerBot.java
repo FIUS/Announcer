@@ -5,10 +5,8 @@ import java.lang.Exception;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.longpolling.util.DefaultLongPollingUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import bot.user.User;
 import bot.user.UserManager;
@@ -20,11 +18,11 @@ import bot.user.UserManager;
  * @author schieljn
  *
  */
-public class AnnouncerBot extends TelegramLongPollingBot {
+public class AnnouncerBot extends DefaultLongPollingUpdateConsumer {
 
-	private UserManager userManager;
-	private MessageSender sender;
-	private BotDataProcessor processor;
+	private final UserManager userManager;
+	private final MessageSender sender;
+	private final BotDataProcessor processor;
 
 	public static long SUPER_ADMIN = 0;
 
@@ -85,7 +83,7 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 	 * 
 	 */
 	@Override
-	public void onUpdateReceived(Update update) {
+	public void consume(Update update) {
 		if (update.hasMessage()) {
 
 			if (update.getMessage().hasText() && !update.getMessage().hasPhoto()) {
@@ -179,13 +177,11 @@ public class AnnouncerBot extends TelegramLongPollingBot {
 
 	}
 
-	@Override
 	public String getBotUsername() {
 
 		return botname;
 	}
 
-	@Override
 	public String getBotToken() {
 
 		return token;

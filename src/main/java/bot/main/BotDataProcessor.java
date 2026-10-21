@@ -7,28 +7,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.photo.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import bot.dish.BlameText;
 import bot.dish.DishTimer;
 import bot.user.User;
 import bot.user.UserManager;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 public class BotDataProcessor {
 
 	private UserManager userManager;
 	private MessageSender sender;
-	private AnnouncerBot bot;
+    private final TelegramClient bot;
 	private DishTimer timer;
 	private int nextInfoText;
 	private HashMap<String, Integer> washerStates;
@@ -36,7 +38,7 @@ public class BotDataProcessor {
 	public BotDataProcessor(AnnouncerBot bot, UserManager userManager, MessageSender sender) {
 		this.userManager = userManager;
 		this.sender = sender;
-		this.bot = bot;
+        this.bot = new OkHttpTelegramClient(bot.getBotToken());
 		this.timer = new DishTimer(sender, userManager);
 		this.nextInfoText = 0;
 		washerStates = new HashMap<String, Integer>();
@@ -162,50 +164,43 @@ public class BotDataProcessor {
 
 	public void displayRemoveAdmin(Update update, HashMap<Long, User> admins) {
 
-		SendMessage message = new SendMessage();
-		message.setChatId(update.getMessage().getChatId() + "");
-		message.setText("Who you want to remove as Admin?");
+		SendMessage message = new SendMessage(update.getMessage().getChatId() + "", "Who you want to remove as Admin?");
 		message.setParseMode("markdown");
-		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
-		List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
+		List<InlineKeyboardRow> rowsInline = new ArrayList<>();
+        InlineKeyboardRow rowInline = new InlineKeyboardRow();
 
 		int counter = 0;
 
 		for (User u : admins.values()) {
-			InlineKeyboardButton keyboard = new InlineKeyboardButton();
-			keyboard.setText(u.name);
+			InlineKeyboardButton keyboard = new InlineKeyboardButton(u.name);
 			keyboard.setCallbackData("btn_admin_remove_" + u.id);
 			rowInline.add(keyboard);
 
 			counter++;
 			if (counter > 1) {
 				rowsInline.add(rowInline);
-				rowInline = new ArrayList<InlineKeyboardButton>();
+				rowInline = new InlineKeyboardRow();
 				counter = 0;
 			}
 		}
 
 		if (admins.values().size() % 2 == 1) {
-			InlineKeyboardButton keyboard = new InlineKeyboardButton();
-			keyboard.setText("-");
+			InlineKeyboardButton keyboard = new InlineKeyboardButton("-");
 			keyboard.setCallbackData("btn_abort");
 			rowInline.add(keyboard);
 
 			rowsInline.add(rowInline);
-			rowInline = new ArrayList<InlineKeyboardButton>();
+			rowInline = new InlineKeyboardRow();
 
-			keyboard = new InlineKeyboardButton();
-			keyboard.setText("Abort");
+			keyboard = new InlineKeyboardButton("Abort");
 			keyboard.setCallbackData("btn_abort");
 			rowInline.add(keyboard);
 
 			rowsInline.add(rowInline);
 
 		} else {
-			rowInline = new ArrayList<InlineKeyboardButton>();
-			InlineKeyboardButton keyboard = new InlineKeyboardButton();
-			keyboard.setText("Abort");
+			rowInline = new InlineKeyboardRow();
+			InlineKeyboardButton keyboard = new InlineKeyboardButton("Abort");
 			keyboard.setCallbackData("btn_abort");
 			rowInline.add(keyboard);
 
@@ -213,7 +208,7 @@ public class BotDataProcessor {
 
 		}
 		// Add it to the message
-		markupInline.setKeyboard(rowsInline);
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup(rowsInline);
 		message.setReplyMarkup(markupInline);
 		try {
 			bot.execute(message); // Sending our message object to user
@@ -224,29 +219,24 @@ public class BotDataProcessor {
 
 	public void displayAdminRequestMenu(String nameOfUser, long chatIDofUser) {
 
-		SendMessage message = new SendMessage();
-		message // Create a message object object
-				.setChatId(AnnouncerBot.SUPER_ADMIN + "");
-		message.setText(nameOfUser + " wants to be admin. Accept the request?");
+		SendMessage message = new SendMessage(AnnouncerBot.SUPER_ADMIN + "", nameOfUser + " wants to be admin. Accept the request?");
 		message.setParseMode("markdown");
-		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
-		List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
 
-		InlineKeyboardButton keyboard = new InlineKeyboardButton();
-		keyboard.setText("Yes");
+		List<InlineKeyboardRow> rowsInline = new ArrayList<>();
+		InlineKeyboardRow rowInline = new InlineKeyboardRow();
+
+		InlineKeyboardButton keyboard = new InlineKeyboardButton("Yes");
 		keyboard.setCallbackData("btn_admin_Yes_" + chatIDofUser + "_" + nameOfUser);
 		rowInline.add(keyboard);
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("No");
+		keyboard = new InlineKeyboardButton("No");
 		keyboard.setCallbackData("btn_admin_No_" + chatIDofUser);
 		rowInline.add(keyboard);
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
 		// Add it to the message
-		markupInline.setKeyboard(rowsInline);
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup(rowsInline);
 		message.setReplyMarkup(markupInline);
 		try {
 			bot.execute(message); // Sending our message object to user
@@ -302,11 +292,7 @@ public class BotDataProcessor {
 
 	private void sendPhoto(long chatID, File file) {
 		// Send
-		SendPhoto sendPhotoRequest = new SendPhoto();
-		sendPhotoRequest.setChatId(Long.toString(chatID));
-		InputFile inpFile = new InputFile(file, file.getAbsolutePath());
-		// path: String, photoName: String
-		sendPhotoRequest.setPhoto(inpFile); //
+		SendPhoto sendPhotoRequest = new SendPhoto(Long.toString(chatID), new InputFile(file, file.getAbsolutePath()));
 		try {
 			bot.execute(sendPhotoRequest);
 		} catch (TelegramApiException e) {
@@ -337,8 +323,7 @@ public class BotDataProcessor {
 	public String getFilePath(PhotoSize photo) {
 		Objects.requireNonNull(photo);
 
-		GetFile getFileMethod = new GetFile();
-		getFileMethod.setFileId(photo.getFileId());
+		GetFile getFileMethod = new GetFile(photo.getFileId());
 
 		try {
 			org.telegram.telegrambots.meta.api.objects.File file = bot.execute(getFileMethod);
@@ -362,28 +347,24 @@ public class BotDataProcessor {
 
 	public void displaySaveConfirm() {
 
-		SendMessage message = new SendMessage(); // Create a message object object
-		message.setChatId(Long.toString(AnnouncerBot.SUPER_ADMIN));
-		message.setText("Failed to load users, enable writing anyway?");
+		SendMessage message = new SendMessage(Long.toString(AnnouncerBot.SUPER_ADMIN), "Failed to load users, enable writing anyway?"); // Create a message object object
 		message.setParseMode("markdown");
-		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
-		List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
 
-		InlineKeyboardButton keyboard = new InlineKeyboardButton();
-		keyboard.setText("Yes");
+		List<InlineKeyboardRow> rowsInline = new ArrayList<>();
+        InlineKeyboardRow rowInline = new InlineKeyboardRow();
+
+		InlineKeyboardButton keyboard = new InlineKeyboardButton("Yes");
 		keyboard.setCallbackData("btn_save_Yes");
 		rowInline.add(keyboard);
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("No");
+		keyboard = new InlineKeyboardButton("No");
 		keyboard.setCallbackData("btn_save_No");
 		rowInline.add(keyboard);
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
 		// Add it to the message
-		markupInline.setKeyboard(rowsInline);
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup(rowsInline);
 		message.setReplyMarkup(markupInline);
 		try {
 			bot.execute(message); // Sending our message object to user
@@ -395,66 +376,55 @@ public class BotDataProcessor {
 	public void displayDishwasher(Update update) {
 		long chatID = update.getMessage().getChatId();
 		String name = update.getMessage().getFrom().getFirstName();
-		SendMessage message = new SendMessage(); // Create a message object object
-		message.setChatId(Long.toString(chatID));
-		message.setText("Welcher Geschirrreinigungsapparat?");
+		SendMessage message = new SendMessage(Long.toString(chatID), "Welcher Geschirrreinigungsapparat?"); // Create a message object object
 		message.setParseMode("markdown");
-		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<List<InlineKeyboardButton>>();
-		List<InlineKeyboardButton> rowInline = new ArrayList<InlineKeyboardButton>();
 
-		InlineKeyboardButton keyboard = new InlineKeyboardButton();
-		keyboard.setText("Asterix");
+		List<InlineKeyboardRow> rowsInline = new ArrayList<>();
+        InlineKeyboardRow rowInline = new InlineKeyboardRow();
+
+		InlineKeyboardButton keyboard = new InlineKeyboardButton("Asterix");
 		keyboard.setCallbackData("btn_dish_asterix_" + name);
 		rowInline.add(keyboard);
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("Obelix");
+		keyboard = new InlineKeyboardButton("Obelix");
 		keyboard.setCallbackData("btn_dish_obelix_" + name);
 		rowInline.add(keyboard);
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("Idefix");
+		keyboard = new InlineKeyboardButton("Idefix");
 		keyboard.setCallbackData("btn_dish_idefix_" + name);
 		rowInline.add(keyboard);
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("Miraculix");
+		keyboard = new InlineKeyboardButton("Miraculix");
 		keyboard.setCallbackData("btn_dish_miraculix_" + name);
 		rowInline.add(keyboard);
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
 
-		rowInline = new ArrayList<InlineKeyboardButton>();
+		rowInline = new InlineKeyboardRow();
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("Tick");
+		keyboard = new InlineKeyboardButton("Tick");
 		keyboard.setCallbackData("btn_dish_tick_" + name);
 		rowInline.add(keyboard);
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("Trick");
+		keyboard = new InlineKeyboardButton("Trick");
 		keyboard.setCallbackData("btn_dish_trick_" + name);
 		rowInline.add(keyboard);
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("Track");
+		keyboard = new InlineKeyboardButton("Track");
 		keyboard.setCallbackData("btn_dish_track_" + name);
 		rowInline.add(keyboard);
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("Donald");
+		keyboard = new InlineKeyboardButton("Donald");
 		keyboard.setCallbackData("btn_dish_donald_" + name);
 		rowInline.add(keyboard);
 
 		// Set the keyboard to the markup
 		rowsInline.add(rowInline);
 
-		rowInline = new ArrayList<InlineKeyboardButton>();
+		rowInline = new InlineKeyboardRow();
 
-		keyboard = new InlineKeyboardButton();
-		keyboard.setText("Abort");
+		keyboard = new InlineKeyboardButton("Abort");
 		keyboard.setCallbackData("btn_abort" + name);
 		rowInline.add(keyboard);
 
@@ -462,7 +432,7 @@ public class BotDataProcessor {
 		rowsInline.add(rowInline);
 
 		// Add it to the message
-		markupInline.setKeyboard(rowsInline);
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup(rowsInline);
 		message.setReplyMarkup(markupInline);
 		try {
 			bot.execute(message); // Sending our message object to user

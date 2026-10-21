@@ -2,13 +2,14 @@ package bot.main;
 
 import static java.lang.Math.toIntExact;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 /**
  *
@@ -17,10 +18,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  */
 public class MessageSender {
 
-	private final TelegramLongPollingBot bot;
+	private final TelegramClient bot;
 
-	public MessageSender(TelegramLongPollingBot bot) {
-		this.bot = bot;
+	public MessageSender(AnnouncerBot bot) {
+		this.bot = new OkHttpTelegramClient(bot.getBotToken());
 	}
 
 	/**
@@ -32,7 +33,7 @@ public class MessageSender {
 	 * @param answer     The message you want to replace the buttons with
 	 */
 	public void sendEditedMessage(long chat_id, long message_id, String answer) {
-		EditMessageText new_message = new EditMessageText();
+		EditMessageText new_message = new EditMessageText(chat_id + "", (int)message_id, null, answer, null, null, null, null, null, null, null);
 		new_message.setChatId(chat_id + "");
 		new_message.setMessageId(toIntExact(message_id));
 		new_message.setText(answer);
@@ -65,9 +66,7 @@ public class MessageSender {
 	 * @return The messageId of the sent message (or null)
 	 */
 	public Message sendMessage(String message, long chat_id) {
-		SendMessage sm = new SendMessage();
-		sm.setChatId(chat_id + "");
-		sm.setText(message);
+		SendMessage sm = new SendMessage(chat_id + "", message);
 		sm.setParseMode("markdown");
 		try {
 			return bot.execute(sm); // Call method to send the message and return messageId
@@ -90,9 +89,7 @@ public class MessageSender {
 	 *                              after sending.
 	 */
 	public void deleteMessage(long chatID, int messageID) throws TelegramApiException {
-		DeleteMessage deleteMessage = new DeleteMessage();
-		deleteMessage.setChatId(chatID + "");
-		deleteMessage.setMessageId(messageID);
+		DeleteMessage deleteMessage = new DeleteMessage(chatID + "", messageID);
 		bot.execute(deleteMessage);
 	}
 

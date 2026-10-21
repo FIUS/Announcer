@@ -12,7 +12,7 @@ import bot.main.MessageSender;
 import bot.main.TelegramList;
 import bot.user.User;
 import bot.user.UserManager;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**

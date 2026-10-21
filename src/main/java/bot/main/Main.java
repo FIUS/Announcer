@@ -7,9 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import bot.dish.BlameText;
 
@@ -33,19 +32,18 @@ public class Main {
 
 		String[] credentials = loadFile(AnnouncerBot.CREDENTIALS, 3);
 		BlameText.loadText();
-		TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
 
-		try {
+		try (TelegramBotsLongPollingApplication botsApplication = new TelegramBotsLongPollingApplication()) {
 
 			AnnouncerBot bot = new AnnouncerBot(credentials[0], credentials[1], Long.parseLong(credentials[2]));
 
-			botsApi.registerBot(bot);
+            botsApplication.registerBot(bot.getBotToken(), bot);
 
 			System.out.println("Bot started");
 
-		} catch (TelegramApiException e) {
+		} catch (Exception e) {
 			System.err.println("Unable to start telegram bot");
-
+            e.printStackTrace();
 		}
 	}
 

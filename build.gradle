@@ -20,7 +20,8 @@ repositories {
 
 dependencies {
     implementation 'com.google.guava:guava:33.7.2-jre'
-    implementation 'org.telegram:telegrambots:6.9.7.1'
+    implementation 'org.telegram:telegrambots-longpolling:10.3.0'
+    implementation 'org.telegram:telegrambots-client:10.3.0'
 }
 
 application {
