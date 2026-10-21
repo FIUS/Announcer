@@ -5,6 +5,8 @@ import java.lang.Exception;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.longpolling.util.DefaultLongPollingUpdateConsumer;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -21,7 +23,8 @@ import bot.user.UserManager;
  */
 public class AnnouncerBot extends DefaultLongPollingUpdateConsumer {
 
-	private final UserManager userManager;
+    private static final Logger log = LoggerFactory.getLogger(AnnouncerBot.class);
+    private final UserManager userManager;
 	private final MessageSender sender;
 	private final BotDataProcessor processor;
 
@@ -85,11 +88,12 @@ public class AnnouncerBot extends DefaultLongPollingUpdateConsumer {
 	 */
     @Override
     public void consume(Update update) {
+        log.debug("Received update: {}", update.getUpdateId());
 		if (update.hasMessage()) {
-
 			if (update.getMessage().hasText() && !update.getMessage().hasPhoto()) {
-				String message = update.getMessage().getText();
-				long chatID = update.getMessage().getChatId();
+                String message = update.getMessage().getText();
+                long chatID = update.getMessage().getChatId();
+                log.debug("Chat {}, Message: {}", chatID, message);
 
 				if (userManager.isAdmin(chatID)) {
 					if (message.toLowerCase().startsWith("/chatid")) {
@@ -173,6 +177,7 @@ public class AnnouncerBot extends DefaultLongPollingUpdateConsumer {
 			}
 
 		} else if (update.hasCallbackQuery()) {
+            log.debug("Callback: {}", update.getCallbackQuery().getData());
 			processor.buttonHandler(update);
 		}
 
