@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.telegram.telegrambots.longpolling.util.DefaultLongPollingUpdateConsumer;
+import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import bot.user.User;
@@ -28,11 +29,11 @@ public class AnnouncerBot extends DefaultLongPollingUpdateConsumer {
 
 	public static boolean blockedSaving = false;
 
-	public static final String BLAME_FILE = "/data/blame.txt";
-	public static final String USER_FILE = "/data/users.bin";
-	public static final String ADMIN_FILE = "/data/admins.bin";
-	public static final String CREDENTIALS = "/data/credential.conf";
-	public static final String CONFIG_FILE = "/data/config.conf";
+	public static final String BLAME_FILE = "./data/blame.txt";
+	public static final String USER_FILE = "./data/users.bin";
+	public static final String ADMIN_FILE = "./data/admins.bin";
+	public static final String CREDENTIALS = "./data/credential.conf";
+	public static final String CONFIG_FILE = "./data/config.conf";
 
 	public static final String[] CONFIG;
 
@@ -53,15 +54,15 @@ public class AnnouncerBot extends DefaultLongPollingUpdateConsumer {
 	}
 
 	public AnnouncerBot(String username, String token, long superAdmin) {
-
+        this.botname = username;
+        this.token = token;
 		AnnouncerBot.SUPER_ADMIN = superAdmin;
 		userManager = new UserManager();
 		sender = new MessageSender(this);
 		processor = new BotDataProcessor(this, userManager, sender);
 		HashMap<Long, User> users = userManager.load(new File(USER_FILE));
 		HashMap<Long, User> admins = userManager.load(new File(ADMIN_FILE));
-		this.botname = username;
-		this.token = token;
+
 
 		if (users != null) {
 			userManager.setUsers(users);
@@ -82,8 +83,8 @@ public class AnnouncerBot extends DefaultLongPollingUpdateConsumer {
 	 * Handles incoming messages
 	 * 
 	 */
-	@Override
-	public void consume(Update update) {
+    @Override
+    public void consume(Update update) {
 		if (update.hasMessage()) {
 
 			if (update.getMessage().hasText() && !update.getMessage().hasPhoto()) {
