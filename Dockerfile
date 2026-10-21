@@ -1,11 +1,11 @@
-FROM gradle:6.8.3-jdk11-hotspot as builder
+FROM gradle:jdk25 as builder
 
 COPY --chown=gradle:gradle . /home/gradle/src
 
 WORKDIR /home/gradle/src
-RUN gradle build
+RUN gradle build jar
 
-FROM adoptopenjdk:11-jre-hotspot
+FROM eclipse-temurin:25-jre
 EXPOSE 9080
 
 COPY --from=builder /home/gradle/src/build/libs/announcer.jar /
