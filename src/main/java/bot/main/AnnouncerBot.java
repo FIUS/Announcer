@@ -95,10 +95,10 @@ public class AnnouncerBot extends DefaultLongPollingUpdateConsumer {
                 long chatID = update.getMessage().getChatId();
                 log.debug("Chat {}, Message: {}", chatID, message);
 
-				if (userManager.isAdmin(chatID)) {
-					if (message.toLowerCase().startsWith("/chatid")) {
-						processor.showChatID(update);
-					}
+                if (message.toLowerCase().startsWith("/chatid") && (userManager.isAdmin(chatID) || AnnouncerBot.SUPER_ADMIN == 0)) {
+                    processor.showChatID(update);
+                }
+                if (userManager.isAdmin(chatID)) {
 					if (message.toLowerCase().startsWith("/add")) {
 						processor.addInfo(update, message.toLowerCase().replaceAll("/add", ""));
 					}
