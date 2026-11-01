@@ -1,17 +1,15 @@
-name: Java CI
-
+name: Java Build
 on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v7
-    - name: Set up JDK 11
+    - name: Set up JDK
       uses: actions/setup-java@v6
       with:
-        java-version: 11
+        distribution: temurin
+        java-version: latest
     - name: Build with Gradle
       run: ./gradlew build
